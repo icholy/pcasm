@@ -17,7 +17,6 @@ segment .bss
 ; uninitialized data is put in the bss segment
 ;
 Guess   resd 1
-Factor  resd 1
 Limit   resd 1
 
 
