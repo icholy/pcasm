@@ -13,7 +13,7 @@ prompt        db "Enter a number: ", 0
 ident_msg     db "Identify is ", 0
 square_msg    db "Square of input is ", 0
 cube_msg      db "Cube of input is ", 0
-cube25_msg    db "Code of input times 25 is ", 0
+cube25_msg    db "Cube of input times 25 is ", 0
 quot_msg      db "Quotien of cube/100 is ", 0
 rem_msg       db "Remainder of cube/100 is ", 0
 neg_msg       db "The negation of the remander is ", 0
@@ -61,6 +61,20 @@ _asm_main:
         mov     ebx, [input]
         mov     eax, ebx
         imul    ebx
+        imul    ebx
+        mov     ebx, eax
+        mov     eax, cube_msg
+        call    print_string
+        mov     eax, ebx
+        call    print_int
+        call    print_nl
+
+        ; print cube * 100
+        mov     ebx, [input]
+        mov     eax, ebx
+        imul    ebx
+        imul    ebx
+        mov     ebx, 100
         imul    ebx
         mov     ebx, eax
         mov     eax, cube_msg
