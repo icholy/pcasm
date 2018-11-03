@@ -69,12 +69,12 @@ _asm_main:
         call    print_int
         call    print_nl
 
-        ; print cube * 100
+        ; print cube * 25
         mov     ebx, [input]
         mov     eax, ebx
         imul    ebx
         imul    ebx
-        mov     ebx, 100
+        mov     ebx, 25
         imul    ebx
         mov     ebx, eax
         mov     eax, cube_msg
@@ -82,6 +82,7 @@ _asm_main:
         mov     eax, ebx
         call    print_int
         call    print_nl
+
 
 
 ; cleanup
