@@ -50,6 +50,7 @@ segment .bss
 ;
 input1  resd 1
 input2  resd 1
+result  resd 1
 
  
 
@@ -76,7 +77,7 @@ _asm_main:
 
         mov     eax, [input1]     ; eax = dword at input1
         add     eax, [input2]     ; eax += dword at input2
-        mov     ebx, eax          ; ebx = eax
+        mov     [result], eax     ; result = eax
         dump_regs 1               ; dump out register values
         dump_mem 2, outmsg1, 1    ; dump out memory
 ;
@@ -92,8 +93,8 @@ _asm_main:
         call    print_int         ; print out input2
         mov     eax, outmsg3
         call    print_string      ; print out third message
-        mov     eax, ebx
-        call    print_int         ; print out sum (ebx)
+        mov     eax, [result]
+        call    print_int         ; print out sum (result)
         call    print_nl          ; print new-line
 
         popa
