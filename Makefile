@@ -34,6 +34,9 @@ math : driver.o math.o asm_io.o
 first : driver.o first.o asm_io.o
 	$(CC) $(CFLAGS) -o first driver.o first.o asm_io.o
 
+playground : driver.o playground.o asm_io.o
+	$(CC) $(CFLAGS) -o playground driver.o playground.o asm_io.o
+
 sub1 : driver.o sub1.o asm_io.o
 	$(CC) $(CFLAGS) -o sub1 driver.o sub1.o asm_io.o
 
@@ -81,6 +84,8 @@ big_int.o : big_int.hpp
 test_big_int.o : big_int.hpp
 
 first.o : asm_io.inc first.asm
+
+playground.o : asm_io.inc playground.asm
 
 sub1.o : asm_io.inc
 
