@@ -77,7 +77,7 @@ _asm_main:
         mov     ebx, 25
         imul    ebx
         mov     ebx, eax
-        mov     eax, cube_msg
+        mov     eax, cube25_msg
         call    print_string
         mov     eax, ebx
         call    print_int
