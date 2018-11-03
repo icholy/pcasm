@@ -62,18 +62,15 @@ _asm_main:
         mov     eax, ebx
         imul    ebx
         imul    ebx
-        mov     ebx, eax
+        mov     ecx, eax ; save cubed result in ecx for later steps
         mov     eax, cube_msg
         call    print_string
-        mov     eax, ebx
+        mov     eax, ecx
         call    print_int
         call    print_nl
 
         ; print cube * 25
-        mov     ebx, [input]
-        mov     eax, ebx
-        imul    ebx
-        imul    ebx
+        mov     eax, ecx ; retrieve the cubed result
         mov     ebx, 25
         imul    ebx
         mov     ebx, eax
@@ -83,6 +80,31 @@ _asm_main:
         call    print_int
         call    print_nl
 
+        ; print quotient of cube / 100
+        mov     eax, ecx ; retrieve the cubed result
+        mov     ebx, 100
+        idiv    ebx
+        mov     ebx, eax ; move quotient into ebx
+        mov     eax, quot_msg
+        call    print_string
+        mov     eax, ebx
+        call    print_int
+        call    print_nl
+        mov     eax, rem_msg
+        call    print_string
+        mov     eax, edx
+        call    print_int
+        call    print_nl
+
+        ; print the negation of the number
+        mov     eax, [input]
+        neg     eax
+        mov     ebx, eax
+        mov     eax, neg_msg
+        call    print_string
+        mov     eax, ebx
+        call    print_int
+        call    print_nl
 
 
 ; cleanup
