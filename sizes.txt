@@ -1,0 +1,6 @@
+BIT    = 1
+NIBBLE = 4 * BIT
+BYTE   = 8 * BIT
+WORD   = 2 * BYTE
+DWORD  = 2 * WORD // double word
+QWORD  = 4 * WORD // quad word
