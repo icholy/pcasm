@@ -23,22 +23,38 @@ _asm_main:
         enter   0,0               ; setup routine
         pusha
 
+input_loop:
+
+        ; get a number
         mov     ebx, Input
         call    get_input
+        
+        ; quit asking if we got zero
+        mov     eax, [Input]
+        cmp     eax, 0
+        je      end_input_loop
 
-        mov     ebx, [Input]
+        ; add to sum
+        add     [Sum], eax
+
+        ; ask for another number
+        jmp     short input_loop
+
+end_input_loop:
+
+        mov     ebx, [Sum]
         call    print_result
 
         popa
         mov     eax, 0            ; return back to C
         leave                     
-        ret
-
+        ret    
 
 segment .data
 
-IntputPrompt db "Enter a number (0 to quit): ", 0
-ResultPrefix db "The sum is: ", 0
+IntputPrompt    db "Enter a number (0 to quit): ", 0
+ResultPrefix    db "The sum is: ", 0
+OverflowError   db "The sum overflowed", 0
 
 segment .text
 ; Parameters
