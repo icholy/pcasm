@@ -42,31 +42,23 @@ _asm_main:
         pusha
 
         mov     eax, prompt1      ; print out prompt
-        mov     ecx, ret1
-        jmp     short print_line
-ret1:
+        call    print_string
+
         mov     ebx, input1       ; result address
-        mov     ecx, ret2         ; return address
-        jmp     short get_int
-ret2:
+        call    get_int
+
         mov     eax, prompt2      ; print out prompt
-        mov     ecx, $+7
-        jmp     short print_line
-ret3:
+        call    print_string
+
         mov     ebx, input2
-        mov     ecx, ret4
-        jmp     short get_int
-ret4:
+        call    get_int
+
         mov     eax, [input1]     ; eax = dword at input1
         add     eax, [input2]     ; eax += dword at input2
         mov     [result], eax     ; result = eax
 
-        mov     ecx, ret5
-        jmp     print_debug
-ret5:
-        mov     ecx, ret6
-        jmp     short print_result
-ret6:
+        call    print_debug
+        call    print_result
 ;
 ; next print out result message as series of steps
 ;
@@ -78,23 +70,19 @@ ret6:
 
 ; Parameters:
 ;       ebx - address of dword to store integer into
-;       ecx - return address
 get_int:
         call read_int
         mov [ebx], eax
-        jmp ecx
+        ret
 
 ; Parameters
 ;       eax - address of string
-;       ecx - return address
 print_line:
         call    print_string
         call    print_nl
-        jmp     ecx
+        ret
 
 
-; Parameters
-;       ecx - return address
 print_result:
         mov     eax, outmsg1
         call    print_string      ; print out first message
@@ -109,11 +97,9 @@ print_result:
         mov     eax, [result]
         call    print_int         ; print out sum (result)
         call    print_nl          ; print new-line
-        jmp     ecx
+        ret
 
-; Parameters
-;       ecx - return address
 print_debug:
         dump_regs 1               ; dump out register values
         dump_mem 2, outmsg1, 1    ; dump out memory
-        jmp     ecx
+        ret
