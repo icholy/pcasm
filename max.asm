@@ -40,8 +40,25 @@ _asm_main:
         mov     [input2], eax
 
         ; find the max
+
+        mov     eax, [input2]
+
+        xor     ebx, ebx
+        cmp     eax, [input1]
+        setg    bl
+        neg     ebx
+
+        and     eax, ebx
+        mov     ecx, eax
+
         mov     eax, [input1]
+        not     ebx
+        and     eax, ebx
+
+        add     eax, ecx
         mov     [result], eax
+
+        dump_regs 1
 
         ; print the result
         mov     eax, result_prompt_msg
