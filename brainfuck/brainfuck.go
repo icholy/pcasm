@@ -16,6 +16,7 @@ const (
 	PLUS    = Token("PLUS")
 	SUB     = Token("SUB")
 	DOT     = Token("DOT")
+	COMMA   = Token("COMMA")
 	OPEN    = Token("OPEN")
 	CLOSE   = Token("CLOSE")
 	EOF     = Token("EOF")
@@ -30,6 +31,7 @@ var mapping = map[rune]Token{
 	'.': DOT,
 	'[': OPEN,
 	']': CLOSE,
+	',': COMMA,
 }
 
 func Tokenize(s string) []Token {
@@ -117,18 +119,46 @@ func (l *Labels) Next() string {
 }
 
 var (
-	DataLabel        = "Data"
-	DataPointerLabel = "DataPointer"
+	DataLabel  = "Data"
+	IndexLabel = "Index"
 )
 
-func CompileOp(op Op, labels *Labels) (string, error) {
+func CompileOp(op Op, labels *Labels) ([]string, error) {
 	switch Token(op) {
 	case GT:
-		return fmt.Sprintf("inc [%s]", DataPointerLabel), nil
+		return []string{
+			fmt.Sprintf("inc dword [%s]", IndexLabel),
+		}, nil
 	case LT:
-		return fmt.Sprintf("dec [%s]", DataPointerLabel), nil
+		return []string{
+			fmt.Sprintf("dec dword [%s]", IndexLabel),
+		}, nil
+	case PLUS:
+		return []string{
+			fmt.Sprintf("mov eax, [%s]", IndexLabel),
+			fmt.Sprintf("inc byte [%s+eax-1]", DataLabel),
+		}, nil
+	case SUB:
+		return []string{
+			fmt.Sprintf("mov eax, [%s]", IndexLabel),
+			fmt.Sprintf("dec byte [%s+eax-1]", DataLabel),
+		}, nil
+	case DOT:
+		return []string{
+			fmt.Sprintf("xor eax, eax"),
+			fmt.Sprintf("mov al, [%s]", IndexLabel),
+			fmt.Sprintf("push dword [%s+eax-1]", DataLabel),
+			fmt.Sprintf("call _putchar"),
+			fmt.Sprintf("pop ecx"),
+		}, nil
+	case COMMA:
+		return []string{
+			fmt.Sprintf("call _getch"),
+			fmt.Sprintf("mov  ebx, [%s]", IndexLabel),
+			fmt.Sprintf("mov  [%s+ebx-1], byte al", DataLabel),
+		}, nil
 	default:
-		return "", fmt.Errorf("unsuported op: %s", op)
+		return nil, fmt.Errorf("unsuported op: %s", op)
 	}
 }
 
@@ -140,7 +170,7 @@ func CompileNode(node Node, labels *Labels) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		instructions = append(instructions, ins)
+		instructions = append(instructions, ins...)
 	default:
 		return nil, fmt.Errorf("unsuported node: %s", node)
 	}
@@ -163,7 +193,7 @@ func Compile(p Program) ([]string, error) {
 }
 
 func main() {
-	input := "><"
+	input := ",>,>,"
 	tokens := Tokenize(input)
 	program, err := Parse(tokens)
 	if err != nil {
