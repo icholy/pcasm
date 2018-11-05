@@ -155,8 +155,8 @@ func CompileOp(op Op, labels *Labels) ([]string, error) {
 	case COMMA:
 		return []string{
 			fmt.Sprintf("call _getch"),
-			fmt.Sprintf("mov  ebx, [%s]", labels.Index()),
-			fmt.Sprintf("mov  [%s+ebx], byte al", labels.Data()),
+			fmt.Sprintf("mov ebx, [%s]", labels.Index()),
+			fmt.Sprintf("mov [%s+ebx], byte al", labels.Data()),
 		}, nil
 	default:
 		return nil, fmt.Errorf("unsuported op: %s", op)
