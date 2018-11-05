@@ -9,17 +9,15 @@ segment .data
 ;
 ; initialized data is put in the data segment here
 ;
-hello_msg    db "Hello World!", 0
-
+format db `%d\n`, 0
 
 segment .bss
 ;
 ; uninitialized data is put in the bss segment
 ;
 
-Sum     resd 0
-
 segment .text
+        extern _scanf, _printf
         global  _asm_main
 _asm_main:
 
@@ -28,15 +26,9 @@ _asm_main:
         pusha
 
         ; main
-        push    Sum
-        push    0
-        call    calc_sum
-        add     esp, 8
-
-        ; print the result
-        mov     eax, [Sum]
-        call    print_int
-        call    print_nl
+        push    dword 10
+        call    foo
+        pop     ecx
 
         ; cleanup
         popa
@@ -44,30 +36,30 @@ _asm_main:
         leave                     
         ret
 
-; Parameters
-;       n [ebp+8] - values to sum
-;       sump [ebp+12] - result address
-calc_sum:
-        push    ebp
-        mov     ebp, esp
-        sub     esp, 4 ; local sum [ebp-4]
 
-        mov     dword [ebp-4], 0
-        mov     ecx, [ebp+8] ; counter
+foo:
+        enter   4, 0
 
-        cmp     ecx, 0
-        je      end_sum_loop
+        mov     [ebp-4], dword 0; i = 0
 
-sum_loop:
-        add [ebp-4], ecx
-        loop sum_loop
+foo_loop:
+        mov     eax, [ebp-4]   ; eax = i
+        cmp     eax, [ebp+8]   ; i < x
+        jnl     end_foo_loop
 
-end_sum_loop:
+        push    eax
+        push    format
+        call    _printf
+        add     esp, 8
 
-        mov eax, [ebp-4] ; result
-        mov ebx, [ebp+12] ; result address
-        mov [ebx], eax
+        push    dword [ebp-4]
+        call    foo
+        pop     ecx
 
-        mov     esp, ebp
-        pop     ebp
+        inc     dword [ebp-4]
+        jmp     short foo_loop
+end_foo_loop:
+
+        sub     esp, 4
+        leave
         ret
