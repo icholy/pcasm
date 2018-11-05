@@ -29,7 +29,7 @@ _asm_main:
 
         ; main
         push    Sum
-        push    2
+        push    0
         call    calc_sum
         add     esp, 8
 
@@ -55,9 +55,14 @@ calc_sum:
         mov     dword [ebp-4], 0
         mov     ecx, [ebp+8] ; counter
 
+        cmp     ecx, 0
+        je      end_sum_loop
+
 sum_loop:
         add [ebp-4], ecx
         loop sum_loop
+
+end_sum_loop:
 
         mov eax, [ebp-4] ; result
         mov ebx, [ebp+12] ; result address
