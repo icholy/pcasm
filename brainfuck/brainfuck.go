@@ -82,7 +82,7 @@ func ParseNodes(pos int, tokens []Token) ([]Node, int, error) {
 		tok := tokens[pos]
 		switch tok {
 		case INVALID:
-			return nil, pos, fmt.Errorf("invalid token: %s", tok)
+			// ignore invalid tokens
 		case EOF:
 			return nodes, pos, nil
 		case CLOSE:
