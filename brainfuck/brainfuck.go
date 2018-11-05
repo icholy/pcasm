@@ -170,7 +170,7 @@ func CompileLoop(loop Loop, labels *Labels) ([]string, error) {
 		fmt.Sprintf("mov eax, [%s]", labels.Index()),
 		fmt.Sprintf("mov al, [%s+eax]", labels.Data()),
 		fmt.Sprintf("cmp al, 0"),
-		fmt.Sprintf("jmp %s", end),
+		fmt.Sprintf("je %s", end),
 	}
 	for _, n := range loop {
 		ins, err := CompileNode(n, labels)
