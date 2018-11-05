@@ -45,11 +45,8 @@ for_loop:
         jmp     short for_loop
 
 end_for:
-        mov     ebx, [ebp+12]     ; ebx = sump
-        mov     eax, [ebp-4]      ; eax = sum
-        mov     [ebx], eax
-
         pop     ebx               ; restore ebx
+        mov     eax, [ebp-4]      ; return sum
         leave
         ret
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void calc_sum(int, int*) __attribute__ ((cdecl));
+int calc_sum(int) __attribute__ ((cdecl));
 
 int main(void) {
     printf("Sum integers up to:  ");
@@ -8,8 +8,7 @@ int main(void) {
     int n;
     scanf("%d", &n);
 
-    int sum;
-    calc_sum(n, &sum);
+    int sum = calc_sum(n);
 
     printf("Sum is: %d\n", sum);
     return 0;
