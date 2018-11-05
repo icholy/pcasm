@@ -162,11 +162,21 @@ func CompileOp(op Op, labels *Labels) ([]string, error) {
 	}
 }
 
+func CompileLoop(loop Loop, Labels *Labels) ([]string, error) {
+	return nil, fmt.Errorf("loops not supported")
+}
+
 func CompileNode(node Node, labels *Labels) ([]string, error) {
 	var instructions []string
 	switch node := node.(type) {
 	case Op:
 		ins, err := CompileOp(node, labels)
+		if err != nil {
+			return nil, err
+		}
+		instructions = append(instructions, ins...)
+	case Loop:
+		ins, err := CompileLoop(node, labels)
 		if err != nil {
 			return nil, err
 		}
