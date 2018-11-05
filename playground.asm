@@ -17,6 +17,8 @@ segment .bss
 ; uninitialized data is put in the bss segment
 ;
 
+Sum     resd 0
+
 segment .text
         global  _asm_main
 _asm_main:
@@ -26,8 +28,14 @@ _asm_main:
         pusha
 
         ; main
-        mov     eax, hello_msg
-        call    print_string
+        push    Sum
+        push    2
+        call    calc_sum
+        add     esp, 8
+
+        ; print the result
+        mov     eax, [Sum]
+        call    print_int
         call    print_nl
 
         ; cleanup
@@ -36,4 +44,25 @@ _asm_main:
         leave                     
         ret
 
+; Parameters
+;       n [ebp+8] - values to sum
+;       sump [ebp+12] - result address
+calc_sum:
+        push    ebp
+        mov     ebp, esp
+        sub     esp, 4 ; local sum [ebp-4]
 
+        mov     dword [ebp-4], 0
+        mov     ecx, [ebp+8] ; counter
+
+sum_loop:
+        add [ebp-4], ecx
+        loop sum_loop
+
+        mov eax, [ebp-4] ; result
+        mov ebx, [ebp+12] ; result address
+        mov [ebx], eax
+
+        mov     esp, ebp
+        pop     ebp
+        ret
