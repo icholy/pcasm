@@ -1,8 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -242,8 +245,15 @@ func Compile(p Program) ([]string, error) {
 }
 
 func main() {
-	input := ",>,>,"
-	tokens := Tokenize(input)
+	var infile, outfile string
+	flag.StringVar(&infile, "f", "", "input file")
+	flag.StringVar(&outfile, "o", "out.asm", "output file")
+	flag.Parse()
+	src, err := ioutil.ReadFile(infile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tokens := Tokenize(string(src))
 	program, err := Parse(tokens)
 	if err != nil {
 		log.Fatal(err)
@@ -252,7 +262,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, ins := range instructions {
-		fmt.Println(ins)
+	assembly := strings.Join(instructions, "\n")
+	if err := ioutil.WriteFile(outfile, []byte(assembly), os.ModePerm); err != nil {
+		log.Fatal(err)
 	}
 }
