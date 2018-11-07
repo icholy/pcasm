@@ -25,7 +25,7 @@ array   resd ARRAY_SIZE
 
 segment .text
         global  _asm_main
-        extern  _puts, _putchar, _printf, _scahf, _dump_line
+        extern  _printf, _scanf, _dump_line
 _asm_main:
         enter   4,0               ; setup routine
         push    ebx
@@ -42,13 +42,39 @@ init_loop:
 
 ; print out the first message
         push    FirstMsg
-        call    _puts
+        call    _printf
         pop     ecx
         
         push    dword 10
         push    dword array
         call    _print_array
         add     esp, 8
+
+
+; prompt 
+
+prompt_loop:
+        ; puts the prompt
+        push    dword Prompt
+        call    _printf
+        pop     ecx
+
+        ; scanf the index
+        lea     eax, [ebp-4]
+        push    eax
+        push    dword InputFormat
+        call    _scanf
+        add     esp, 8
+
+        ; scanf returns the number of scanned items, we want 1
+        cmp     eax, 1
+        je      input_ok
+
+        ; try again
+        call    _dump_line
+        jmp     prompt_loop
+
+input_ok:
 
 ;
 ; code is put in the text segment. Do not modify the code before
