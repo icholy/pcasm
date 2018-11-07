@@ -22,10 +22,9 @@ segment .bss
 ;
 array   resd ARRAY_SIZE
 
-
 segment .text
         global  _asm_main
-        extern  _printf, _scanf, _dump_line
+        extern  _puts, _printf, _scanf, _dump_line
 _asm_main:
         enter   4,0               ; setup routine
         push    ebx
@@ -42,7 +41,7 @@ init_loop:
 
 ; print out the first message
         push    FirstMsg
-        call    _printf
+        call    _puts
         pop     ecx
         
         push    dword 10
@@ -50,11 +49,10 @@ init_loop:
         call    _print_array
         add     esp, 8
 
-
 ; prompt 
 
 prompt_loop:
-        ; puts the prompt
+        ; printf the prompt
         push    dword Prompt
         call    _printf
         pop     ecx
@@ -76,10 +74,27 @@ prompt_loop:
 
 input_ok:
 
-;
-; code is put in the text segment. Do not modify the code before
-; or after this comment.
-;
+        ; printf the element at the specified index
+        mov     esi, [ebp-4]
+        push    dword [array + 4*esi]
+        push    esi
+        push    dword SecondMessage
+        call    _printf
+        add     esp, 12
+
+; print out the third message
+
+        push    dword ThirdMsg
+        call    _puts
+        pop     ecx
+
+        ; print elements 20 to 29
+        push    dword 10
+        push    dword array + 20*4
+        call    _print_array
+        add     esp, 8
+        
+; clean up
 
         pop     esi
         pop     ebx
