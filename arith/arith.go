@@ -58,40 +58,63 @@ func (Code) Ins(format string, args ...interface{}) {
 func Compile(n Node, code *Code) {
 	switch n := n.(type) {
 	case Int:
-		code.Ins("push dword %d", int(n))
+		code.Ins("mov eax, %d", int(n))
 	case Binary:
-		Compile(n.Left, code)
 		Compile(n.Right, code)
-		fmt.Printf("; %s\n", n)
+		code.Ins("push eax")
+		Compile(n.Left, code)
 		code.Ins("pop ebx")
-		code.Ins("pop eax")
 		switch n.Op {
 		case Add:
 			code.Ins("add eax, ebx")
 		case Sub:
 			code.Ins("sub eax, ebx")
 		case Mul:
-			code.Ins("mul eax, ebx")
+			code.Ins("imul eax, ebx")
 		case Div:
-			code.Ins("div eax, ebx")
+			code.Ins("idiv eax, ebx")
 		}
-		code.Ins("push eax")
 	default:
 		panic("invalid node")
 	}
 }
 
+func Eval(n Node) int {
+	switch n := n.(type) {
+	case Int:
+		return int(n)
+	case Binary:
+		switch n.Op {
+		case Add:
+			return Eval(n.Left) + Eval(n.Right)
+		case Sub:
+			return Eval(n.Left) - Eval(n.Right)
+		case Mul:
+			return Eval(n.Left) * Eval(n.Right)
+		case Div:
+			return Eval(n.Left) / Eval(n.Right)
+		}
+	}
+	return 0
+}
+
 func main() {
+
 	expr := Binary{
-		Op:   Add,
-		Left: Int(1),
+		Op: Add,
+		Left: Binary{
+			Op:    Mul,
+			Left:  Int(10),
+			Right: Int(23),
+		},
 		Right: Binary{
 			Op:    Sub,
-			Left:  Int(10),
-			Right: Int(5),
+			Left:  Int(2),
+			Right: Int(3),
 		},
 	}
 
 	var code Code
+	fmt.Println(";", expr, "=", Eval(expr))
 	Compile(expr, &code)
 }
