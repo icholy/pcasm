@@ -58,9 +58,6 @@ sub5 : main5.o sub5.o asm_io.o
 sub6 :	main6.o sub6.o
 	$(CC) $(CFLAGS) -o sub6 main6.o sub6.o
 
-asm_io.o : asm_io.asm
-	$(AS) $(ASFLAGS) -d COFF_TYPE asm_io.asm
-
 array1 : driver.o array1.o array1c.o
 	$(CC) $(CFLAGS) -o array1 array1.o array1c.o asm_io.o
 
