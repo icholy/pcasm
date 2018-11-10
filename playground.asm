@@ -9,7 +9,7 @@ segment .data
 ;
 ; initialized data is put in the data segment here
 ;
-format db `%d\n`, 0
+message db `Hello World!\n`, 0
 
 segment .bss
 ;
@@ -19,47 +19,22 @@ segment .bss
 segment .text
         extern _scanf, _printf
         global  _asm_main
+
+%define answer      [ebp-4]
 _asm_main:
 
         ; setup
-        enter   0,0               ; setup routine
-        pusha
+        push    ebp          ; save the prev stack frame
+        mov     ebp, esp     ; save the current stack frame (so we can access stuff relative to it)
+        sub     esp, 4       ; one local variable
+        pusha                ; save the registers
 
-        ; main
-        push    dword 10
-        call    foo
-        pop     ecx
-
-        ; cleanup
-        popa
-        mov     eax, 0            ; return back to C
-        leave                     
-        ret
-
-
-foo:
-        enter   4, 0
-
-        mov     [ebp-4], dword 0; i = 0
-
-foo_loop:
-        mov     eax, [ebp-4]   ; eax = i
-        cmp     eax, [ebp+8]   ; i < x
-        jnl     end_foo_loop
-
-        push    eax
-        push    format
+        push    message      ; print hello world
         call    _printf
-        add     esp, 8
-
-        push    dword [ebp-4]
-        call    foo
         pop     ecx
 
-        inc     dword [ebp-4]
-        jmp     short foo_loop
-end_foo_loop:
-
-        sub     esp, 4
-        leave
+        popa                 ; restore the registers
+        mov     esp, ebp     ; restore the stack back to where it was (we already did this though)
+        pop     ebp          ; restore the previous stack frame
+        mov     eax, 0       ; the C return value
         ret
