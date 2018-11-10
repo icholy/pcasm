@@ -70,8 +70,8 @@ memex : memex.o memory.o
 dmaxt : dmaxt.o dmax.o
 	$(CC) $(CFLAGS) -o dmaxt dmaxt.o dmax.o
 
-quadt : quadt.o quad.o
-	$(CC) $(CFLAGS) -o quadt quadt.o quad.o
+quadt : quadt.c quad.o
+	$(CC) $(CFLAGS) -o quadt quadt.c quad.o
 
 readt : readt.o read.o
 	$(CC) $(CFLAGS) -o readt readt.o read.o
@@ -103,7 +103,6 @@ sub4.o : asm_io.inc
 main4.o : asm_io.inc
 
 driver.o : driver.c
-
 
 clean :
 	rm -f *.o *.exe
