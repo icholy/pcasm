@@ -35,8 +35,62 @@ _quadratic:
         sub     esp, 16         ; allocate 2 doubles (disc & one_over_2a)
         push    ebx             ; must save original ebx
 
-    
+        ; b^2 - 4ac
+        fild    word [MinusFour] ; stack -4
+        fld     a                ; stack: a, -4
+        fld     c                ; stack: c, a, -4
+        fmulp   st1              ; stack: a*c, -4
+        fmulp   st1              ; stacl" -4*c*a
+        fld     b                ; stack: b, -4*c*a
+        fld     b                ; stack: b, b, -4*c*a
+        fmulp   st1              ; stack: b*b, -4*c*a
+        faddp   st1              ; stack b*b - 4*c*a
+        
+        ; there are no real answers if the current value is below 0
+        ftst
+        fstsw   ax
+        sahf
+        jb      no_real_solution
 
+        ; sqrt(b^2 - 4ac)
+        fsqrt                    ; stack: sqrt(b*b - 4ac)
+        fstp    disc             ; store and pop
+
+        ; 1 / 2a
+        fld1                     ; stack: 1
+        fld1                     ; stack: 1, 1
+        fld1                     ; stack: 1, 1, 2
+        faddp   st1              ; stack: 2, 1
+        fld     a                ; stack: 2, a, 1
+        fmulp   st1              ; stack: 2*a, 1
+        fdivp   st1              ; stack: 1/2*a
+        fstp    one_over_2a      ; store and pop
+
+        ; root1
+        fld    one_over_2a      ; stack = one_over_2a
+        fld    disc             ; stack = disc, one_over_2a
+        fld    b                ; stack = b, disc, one_over_2a
+        faddp  st1              ; stack = b+disc, one_over_2a
+        fdivp  st1              ; stack = b+disc / one_over_2a
+        fstp   qword root1
+
+        ; root2
+        fld    one_over_2a      ; stack = one_over_2a
+        fld    disc             ; stack = disc, one_over_2a
+        fchs                    ; stack = -disc, one_over_2a
+        fld    b                ; stack = b, disc, one_over_2a
+        faddp  st1              ; stack = b-disc, one_over_2a
+        fdivp  st1              ; stack = b-disc / one_over_2a
+        fstp   qword root2
+
+        mov     eax, 1
+
+        jmp     short quit
+
+no_real_solution:
+        mov     eax, 0          ; return value is 0
+
+quit:
         pop     ebx
         mov     esp, ebp
         pop     ebp
