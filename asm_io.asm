@@ -37,6 +37,7 @@ segment .data public align=4 class=data use32
 segment .data
 %endif
 
+float_format db "%f", 0
 int_format	    db  "%i", 0
 string_format       db  "%s", 0
 reg_format	    db  "Register Dump # %d", NL
@@ -72,7 +73,7 @@ segment text public align=1 class=code use32
 %else
 segment .text
 %endif
-	global	read_int, print_int, print_string, read_char
+	global	read_int, print_int, print_float, print_string, read_char
 	global  print_char, print_nl, sub_dump_regs, sub_dump_mem
         global  sub_dump_math, sub_dump_stack
         extern  _scanf, _printf, _getchar, _putchar, _fputs
@@ -110,6 +111,23 @@ print_int:
 	popa
 	leave
 	ret
+
+print_float:
+        enter	8,0
+		pusha
+		pushf
+
+        fst     qword [ebp-8]
+        push    dword [ebp-4]
+        push    dword [ebp-8]
+        push    float_format
+        call    _printf
+		add		esp, 12
+
+		popf
+		popa
+		leave
+        ret
 
 print_string:
 	enter	0,0
