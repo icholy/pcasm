@@ -5,7 +5,7 @@
 ; This subroutine reads an array of doubles from a file
 
 segment .data
-format  db      "%lf", 0        ; format for fscanf()
+        format  db      "%lf", 0        ; format for fscanf()
 
 segment .bss
 
@@ -20,6 +20,7 @@ segment .text
 %define ARRAYP          dword [ebp + 12]
 %define ARRAY_SIZE      dword [ebp + 16]
 %define TEMP_DOUBLE     [ebp - 8]
+%define TEMP_DOUBLE_H   [ebp - 4]
 
 ;
 ; function _read_doubles
@@ -36,15 +37,47 @@ segment .text
 
 _read_doubles:
         push    ebp
-        mov     ebp,esp
+        mov     ebp, esp
         sub     esp, SIZEOF_DOUBLE      ; define one double on stack
 
-    
+        push    esi                     ; save esi
+        mov     esi, ARRAYP
+        xor     edx, edx                ; zero edx (array index)
+        
+while_loop:
+
+        ; quit if the array is full
+        cmp     edx, ARRAY_SIZE
+        jnl     short quit
+
+        ; use scanf to read a float from the FILE
+        push    edx                ; save
+        lea     eax, TEMP_DOUBLE
+        push    eax
+        push    dword format
+        push    FP
+        call    _fscanf
+        add     esp, 12
+        pop     edx                ; restore edx
+
+        ; make sure fscanf returned 1
+        cmp     eax, 1
+        jne     short quit
+
+        ; add the value into the array
+        mov     eax, TEMP_DOUBLE                     ; copy the low bytes
+        mov     [esi + SIZEOF_DOUBLE*edx], eax
+        mov     eax, TEMP_DOUBLE_H                   ; copy the high bytes
+        mov     [esi + SIZEOF_DOUBLE*edx + 4], eax
+        inc     edx
+
+        jmp     while_loop
+quit:
 
         pop     esi                     ; restore esi
-        mov     eax, 0
+        mov     eax, edx                ; return number of values read
 
-        mov     esp, ebp
+        mov     esp, ebp                ; restore frame pointer
         pop     ebp
         ret 
 

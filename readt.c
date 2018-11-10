@@ -10,8 +10,9 @@
 #include "cdecl.h"
 
 extern int PRE_CDECL read_doubles( FILE *, double *, int ) POST_CDECL;
+void print_doubles(double *array, int length);
 
-#define MAX 100
+#define MAX 10
 
 int main()
 {
